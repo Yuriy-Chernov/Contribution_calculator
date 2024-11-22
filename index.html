@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор доходности вклада в USDT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Калькулятор доходности вклада в USDT</h2>
+        <label for="amount">Сумма вклада (USDT)(Вся сумма вклада):</label>
+        <input type="number" id="amount" placeholder="Введите сумму" required>
+
+        <label for="amountForRate">Сумма для годового процента:(Лимит 1)</label>
+        <input type="number" id="amountForRate" placeholder="Введите сумму для первого процента" required>
+
+        <label for="firstRate">Годовой процент на введенную сумму:(APR для лимита 1)</label>
+        <input type="number" id="firstRate" placeholder="Введите процент" required>
+
+        <label for="additionalRate">Годовой процент на сумму свыше указанной:(APR для всего что свыше лимита 1)</label>
+        <input type="number" id="additionalRate" placeholder="Введите процент" required>
+
+        <label for="days">Количество дней хранения:</label>
+        <input type="number" id="days" placeholder="Введите количество дней" required>
+
+        <button onclick="calculateYield()">Рассчитать доходность</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function calculateYield() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const amountForRate = parseFloat(document.getElementById('amountForRate').value);
+            const firstRate = parseFloat(document.getElementById('firstRate').value);
+            const additionalRate = parseFloat(document.getElementById('additionalRate').value);
+            const days = parseInt(document.getElementById('days').value);
+
+            let interest = 0;
+
+            if (amount <= amountForRate) {
+                interest = (amount * (firstRate / 100 / 365)) * days; // применяем процент для введенной суммы
+            } else {
+                const firstSegmentYield = (amountForRate * (firstRate / 100 / 365)) * days;
+                const additionalYield = ((amount - amountForRate) * (additionalRate / 100 / 365)) * days;
+                interest = firstSegmentYield + additionalYield;
+            }
+
+            const totalAmount = amount + interest;
+            const averageInterest = ((firstRate * amountForRate + additionalRate * (amount - amountForRate)) / amount) || 0;
+
+            document.getElementById('result').innerHTML = `<p>Доход за ${days} дней: <strong>${interest.toFixed(2)} USDT</strong></p>
+                                                     <p>Общая сумма: <strong>${totalAmount.toFixed(2)} USDT</strong></p>
+                                                     <p>Средний годовой процент на всю сумму: <strong>${averageInterest.toFixed(2)}%</strong></p>`;
+        }
+    </script>
+
+</body>
+
+</html>
